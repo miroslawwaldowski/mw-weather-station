@@ -159,6 +159,10 @@ app.get("/test", (req, res) => {
   res.send("hallo");
 });
 
+app.get("/env", (req, res) => {
+  res.send(   `${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}&${process.env.DB_TIMEZONE}`);
+});
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server has started on port ${process.env.PORT}`);
 });
