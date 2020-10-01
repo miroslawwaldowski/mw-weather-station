@@ -170,6 +170,20 @@ app.post("/time", async (req, res) => {
   }
 });
 
+
+
+app.get("/time", async (req, res) => {
+  try {
+    const settimezone = await pool.query(
+      "SET TIMEZONE='$1'",
+      [timezone]);
+    res.json({m: ok});
+  } catch (err) {
+    console.log(err.massage);
+  }
+});
+
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server has started on port ${process.env.PORT}`);
 });
