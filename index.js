@@ -36,7 +36,7 @@ app.post("/post", async (req, res) => {
   try {
     const name = req.body.name;
     const foundDevice = await pool.query(
-      "SELECT * FROM devices WHERE name_device=$1 LIMIT 1",
+      "SELECT * FROM devices WHERE name_device='$1' LIMIT 1",
       [name]
     );
     if (foundDevice.rows.length === 0) {
@@ -53,7 +53,7 @@ app.post("/post", async (req, res) => {
         const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
         const timezone = await pool.query(sql);
         const weatherdata = await pool.query(
-          "INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
+          "INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES('$1', '$2', now(), '$3', '$4', '$5', '$6', '$7', '$8', '$9', '$10') RETURNING *",
           [
             foundDevice.rows[0].id,
             req.body.temperature,
@@ -86,13 +86,13 @@ app.post("/devices", async (req, res) => {
   try {
     const name = req.body.name;
     const foundDevice = await pool.query(
-      "SELECT * FROM devices WHERE name_device=$1 LIMIT 1",
+      "SELECT * FROM devices WHERE name_device='$1' LIMIT 1",
       [name]
     );
     if (foundDevice.rows.length === 0) {
       const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
       const devices = await pool.query(
-        "INSERT INTO devices (name_device, hashed_password) VALUES($1, $2) RETURNING *",
+        "INSERT INTO devices (name_device, hashed_password) VALUES('$1', '$2') RETURNING *",
         [req.body.name, hashedPassword]
       );
       res.json({ message: "Device added successfully" });
@@ -153,14 +153,6 @@ app.get("/", async (req, res) => {
   } catch (err) {
     console.log(err.massage);
   }
-});
-
-app.get("/test", (req, res) => {
-  res.send("hallo");
-});
-
-app.get("/env", (req, res) => {
-  res.send(   `${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}&${process.env.DB_TIMEZONE}`);
 });
 
 app.listen(process.env.PORT || 5000, () => {
