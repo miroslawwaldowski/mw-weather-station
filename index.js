@@ -53,7 +53,7 @@ app.post("/post", async (req, res) => {
         //const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
         //const timezone = await pool.query(sql);
         const weatherdata = await pool.query(
-          "SET TIMEZONE='$1';INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($2, $3, now(), $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *",
+          `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
           [
             process.env.DB_TIMEZONE,
             foundDevice.rows[0].id,
@@ -68,9 +68,19 @@ app.post("/post", async (req, res) => {
             req.body.battery,
           ]
         );
-        res.json(weatherdata.rows[0]);
+        res.json(weatherdata);
       }
     }
+  } catch (err) {
+    console.log(err.massage);
+  }
+});
+
+app.get("/time3", async (req, res) => {
+  try {
+    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; SELECT id, name_device FROM devices`;
+    const settimezone = await pool.query(sql);
+    res.json({m: settimezone});
   } catch (err) {
     console.log(err.massage);
   }
@@ -157,35 +167,6 @@ app.get("/", async (req, res) => {
 });
 
 
-app.get("/time", async (req, res) => {
-  try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}';`;
-    const settimezone = await pool.query(sql);
-    res.json({m: sql});
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
-
-app.get("/time2", async (req, res) => {
-  try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}';`;
-    const settimezone = await pool.query(sql);
-    res.json({m: settimezone});
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
-
-app.get("/time3", async (req, res) => {
-  try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; SELECT id, name_device FROM devices`;
-    const settimezone = await pool.query(sql);
-    res.json({m: settimezone});
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
 
 
 app.listen(process.env.PORT || 5000, () => {
