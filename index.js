@@ -53,8 +53,9 @@ app.post("/post", async (req, res) => {
         //const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
         //const timezone = await pool.query(sql);
         const weatherdata = await pool.query(
-          `SET TIMEZONE='${process.env.DB_TIMEZONE}';INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+          "SET TIMEZONE='$1';INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($2, $3, now(), $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *",
           [
+            process.env.DB_TIMEZONE,
             foundDevice.rows[0].id,
             req.body.temperature,
             req.body.humidity,
