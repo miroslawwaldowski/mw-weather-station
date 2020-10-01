@@ -159,8 +159,8 @@ app.get("/", async (req, res) => {
 
 app.get("/time", async (req, res) => {
   try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
-    //const settimezone = await pool.query(sql);
+    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}';`;
+    const settimezone = await pool.query(sql);
     res.json({m: sql});
   } catch (err) {
     console.log(err.massage);
