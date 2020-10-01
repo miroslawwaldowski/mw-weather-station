@@ -50,7 +50,7 @@ app.post("/post", async (req, res) => {
       } else {
         const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES(${foundDevice.rows[0].id}, ${req.body.temperature}, now(), ${req.body.humidity}, ${req.body.pressure}, ${req.body.uv}, ${req.body.pm10}, ${req.body.pm25}, ${req.body.latitude}, ${req.body.longitude}, ${req.body.battery}) RETURNING *`;
         const weatherdata = await pool.query(sql);
-        res.json(weatherdata);
+        res.json({ message: "data added" });
       }
     }
   } catch (err) {
