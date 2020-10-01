@@ -10,10 +10,9 @@ const saltRounds = 10;
 //middlewere
 
 app.use(cors());
-app.use(express.json()); //req.body
+app.use(express.json());
 /// app.use((req, res, next) => setTimeout(next, Math.random() * 1000)); // add  latency
 
-//routs//
 app.set("query parser", "simple");
 
 //post data
@@ -49,62 +48,11 @@ app.post("/post", async (req, res) => {
       if (validPassword === false) {
         res.json({ message: "Invalid password" });
       } else {
-        const weatherdata = await pool.query(
-          `INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-          [
-            foundDevice.rows[0].id,
-            req.body.temperature,
-            req.body.humidity,
-            req.body.pressure,
-            req.body.uv,
-            req.body.pm10,
-            req.body.pm25,
-            req.body.latitude,
-            req.body.longitude,
-            req.body.battery,
-          ]
-        );
-        res.json(weatherdata);
-      }
-    }
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
-
-app.post("/post1", async (req, res) => {
-  try {
-    const name = req.body.name;
-    const foundDevice = await pool.query(
-      "SELECT * FROM devices WHERE name_device=$1 LIMIT 1",
-      [name]
-    );
-    if (foundDevice.rows.length === 0) {
-      res.json({ message: "Invalid device" });
-    } else {
-      const validPassword = await bcrypt.compare(
-        req.body.password,
-        foundDevice.rows[0].hashed_password
-      );
-      if (validPassword === false) {
-        res.json({ message: "Invalid password" });
-      } else {
-        const sql =  `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES(${foundDevice.rows[0].id}, ${req.body.temperature}, now(), ${req.body.humidity}, ${req.body.pressure}, ${req.body.uv}, ${req.body.pm10}, ${req.body.pm25}, ${req.body.latitude}, ${req.body.longitude}, ${req.body.battery}) RETURNING *`;
+        const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES(${foundDevice.rows[0].id}, ${req.body.temperature}, now(), ${req.body.humidity}, ${req.body.pressure}, ${req.body.uv}, ${req.body.pm10}, ${req.body.pm25}, ${req.body.latitude}, ${req.body.longitude}, ${req.body.battery}) RETURNING *`;
         const weatherdata = await pool.query(sql);
         res.json(weatherdata);
       }
     }
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
-
-
-app.post("/time3", async (req, res) => {
-  try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (temperature, time_stamp, humidity) VALUES(${req.body.temperature}, now(), ${req.body.humidity}) RETURNING *`;
-    const settimezone = await pool.query(sql);
-    res.json({m: settimezone});
   } catch (err) {
     console.log(err.massage);
   }
@@ -189,9 +137,6 @@ app.get("/", async (req, res) => {
     console.log(err.massage);
   }
 });
-
-
-
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server has started on port ${process.env.PORT}`);
