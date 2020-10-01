@@ -49,13 +49,52 @@ app.post("/post", async (req, res) => {
       if (validPassword === false) {
         res.json({ message: "Invalid password" });
       } else {
+        const weatherdata = await pool.query(
+          `INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+          [
+            foundDevice.rows[0].id,
+            req.body.temperature,
+            req.body.humidity,
+            req.body.pressure,
+            req.body.uv,
+            req.body.pm10,
+            req.body.pm25,
+            req.body.latitude,
+            req.body.longitude,
+            req.body.battery,
+          ]
+        );
+        res.json(weatherdata);
+      }
+    }
+  } catch (err) {
+    console.log(err.massage);
+  }
+});
+
+app.post("/post1", async (req, res) => {
+  try {
+    const name = req.body.name;
+    const foundDevice = await pool.query(
+      "SELECT * FROM devices WHERE name_device=$1 LIMIT 1",
+      [name]
+    );
+    if (foundDevice.rows.length === 0) {
+      res.json({ message: "Invalid device" });
+    } else {
+      const validPassword = await bcrypt.compare(
+        req.body.password,
+        foundDevice.rows[0].hashed_password
+      );
+      if (validPassword === false) {
+        res.json({ message: "Invalid password" });
+      } else {
         
         //const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
         //const timezone = await pool.query(sql);
         const weatherdata = await pool.query(
           `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
           [
-            process.env.DB_TIMEZONE,
             foundDevice.rows[0].id,
             req.body.temperature,
             req.body.humidity,
@@ -78,7 +117,7 @@ app.post("/post", async (req, res) => {
 
 app.post("/time3", async (req, res) => {
   try {
-    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; SELECT id, name_device FROM devices`;
+    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (temperature, time_stamp, humidity) VALUES(${req.body.temperature}, now(), ${req.body.humidity}) RETURNING *`;
     const settimezone = await pool.query(sql);
     res.json({m: settimezone});
   } catch (err) {
