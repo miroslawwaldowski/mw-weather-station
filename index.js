@@ -6,6 +6,7 @@ const cors = require("cors");
 const pool = require("./db/db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const path = require('path');
 
 //middlewere
 
@@ -102,7 +103,7 @@ app.get("/devices", async (req, res) => {
 //get
 //?limit=5&time=2020-07-20 21:26:24.334931&type[]=id&type[]=temperature&type[]=time_stamp&type[]=humidity&device=1
 
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   try {
     var limit = "NULL";
     if (req.query.limit) {
@@ -137,6 +138,16 @@ app.get("/", async (req, res) => {
     console.log(err.massage);
   }
 });
+
+//get react app
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static('cleint/build'));
+
+  app.get("/", (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'cleint','build','index.html'));
+  } );
+}
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server has started on port ${process.env.PORT}`);
