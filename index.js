@@ -76,7 +76,7 @@ app.post("/post", async (req, res) => {
   }
 });
 
-app.get("/time3", async (req, res) => {
+app.post("/time3", async (req, res) => {
   try {
     const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'; SELECT id, name_device FROM devices`;
     const settimezone = await pool.query(sql);
