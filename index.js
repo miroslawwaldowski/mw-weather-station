@@ -89,24 +89,8 @@ app.post("/post1", async (req, res) => {
       if (validPassword === false) {
         res.json({ message: "Invalid password" });
       } else {
-        
-        //const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
-        //const timezone = await pool.query(sql);
-        const weatherdata = await pool.query(
-          `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES($1, $2, now(), $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-          [
-            foundDevice.rows[0].id,
-            req.body.temperature,
-            req.body.humidity,
-            req.body.pressure,
-            req.body.uv,
-            req.body.pm10,
-            req.body.pm25,
-            req.body.latitude,
-            req.body.longitude,
-            req.body.battery,
-          ]
-        );
+        const sql =  `SET TIMEZONE='${process.env.DB_TIMEZONE}'; INSERT INTO weatherdata (device_id, temperature, time_stamp, humidity, pressure, uv, pm10, pm25, latitude, longitude, battery) VALUES(${foundDevice.rows[0].id}, ${req.body.temperature}, now(), ${req.body.humidity}, ${req.body.pressure}, ${req.body.uv}, ${req.body.pm10}, ${req.body.pm25}, ${req.body.latitude}, ${req.body.longitude}, ${req.body.battery}) RETURNING *`;
+        const weatherdata = await pool.query(sql);
         res.json(weatherdata);
       }
     }
@@ -114,6 +98,7 @@ app.post("/post1", async (req, res) => {
     console.log(err.massage);
   }
 });
+
 
 app.post("/time3", async (req, res) => {
   try {
