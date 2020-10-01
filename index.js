@@ -141,7 +141,7 @@ app.get("/api", async (req, res) => {
 
 //get react app
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV == "production") {
   app.use(express.static('cleint/build'));
 
   app.get("/", (req, res) => {
