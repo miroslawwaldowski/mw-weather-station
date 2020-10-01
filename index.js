@@ -156,6 +156,20 @@ app.get("/", async (req, res) => {
   }
 });
 
+
+app.post("/time", async (req, res) => {
+  try {
+    const timezone = process.env.DB_TIMEZONE;
+    const settimezone = await pool.query(
+      "SET TIMEZONE='$1'",
+      [timezone]
+    );
+          res.json({ message: "Device added successfully" });
+  } catch (err) {
+    console.log(err.massage);
+  }
+});
+
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server has started on port ${process.env.PORT}`);
 });
