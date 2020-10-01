@@ -157,26 +157,10 @@ app.get("/", async (req, res) => {
 });
 
 
-app.post("/time", async (req, res) => {
-  try {
-    const timezone = process.env.DB_TIMEZONE;
-    const settimezone = await pool.query(
-      "SET TIMEZONE='$1'",
-      [timezone]
-    );
-          res.json({ message: "Device added successfully" });
-  } catch (err) {
-    console.log(err.massage);
-  }
-});
-
-
-
 app.get("/time", async (req, res) => {
   try {
-    const settimezone = await pool.query(
-      "SET TIMEZONE='$1'",
-      [timezone]);
+    const sql = `SET TIMEZONE='${process.env.DB_TIMEZONE}'`;
+    const settimezone = await pool.query(sql);
     res.json({m: ok});
   } catch (err) {
     console.log(err.massage);
