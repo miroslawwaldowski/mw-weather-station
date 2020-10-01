@@ -11,7 +11,7 @@ CREATE TABLE weatherdata
 (
   id serial PRIMARY KEY,
   device_id INTEGER REFERENCES devices (id), 
-  time_stamp TIMESTAMP,
+  time_stamp TIMESTAMPTZ,
   temperature NUMERIC(4,1),
   humidity NUMERIC(4,1),
   uv smallint,
